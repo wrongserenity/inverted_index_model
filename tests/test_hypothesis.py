@@ -82,13 +82,13 @@ class DataContentTest(unittest.TestCase):
 
 
 class MethodsTestCases(unittest.TestCase):
-    @given(st.integers(min_value=1, max_value=10000), st.integers())
+    @given(st.integers(min_value=1, max_value=10000), st.integers(min_value=1, max_value=2))
     @settings(deadline=6000)
     def test_encode_return_type(self, value_sample, encoding_type):
         encoded = elias_encoding(value_sample, encoding_type)
         self.assertIsInstance(encoded, str)
 
-    @given(st.binary(min_size=1, max_size=20), st.integers())
+    @given(st.binary(min_size=1, max_size=20), st.integers(min_value=1, max_value=2))
     @settings(deadline=6000)
     def test_decode_return_type(self, value_sample, encoding_type):
         decoded = elias_decoding(str(value_sample), encoding_type)
@@ -102,7 +102,7 @@ class MethodsTestCases(unittest.TestCase):
 
 
 class DataProcessingTestCases(unittest.TestCase):
-    @given(st.integers(min_value=1, max_value=10000), st.integers())
+    @given(st.integers(min_value=1, max_value=10000), st.integers(min_value=1, max_value=2))
     @settings(deadline=6000)
     def test_encode_decode_pair(self, value_sample, encoding_type):
         encoded = elias_encoding(value_sample, encoding_type)

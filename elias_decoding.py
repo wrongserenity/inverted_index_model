@@ -69,5 +69,5 @@ def elias_delta_decoding(x):
 def elias_decoding(x, encoding):
     if encoding == 1:
         return elias_gamma_decoding(x)
-    else:
+    elif encoding == 2:
         return elias_delta_decoding(x)

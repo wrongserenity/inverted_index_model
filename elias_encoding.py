@@ -24,5 +24,5 @@ def elias_delta_encode(x):
 def elias_encoding(number, encoding):
     if encoding == 1:
         return elias_gamma_encode(number)
-    else:
+    elif encoding == 2:
         return elias_delta_encode(number)
