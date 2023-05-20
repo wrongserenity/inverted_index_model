@@ -6,6 +6,9 @@ from hypothesis import given, settings
 import hypothesis.strategies as st
 
 from main import file_path
+from elias_decoding import elias_decoding
+from elias_encoding import elias_encoding
+from test_memory import total_size
 
 
 class BasicTestCase(unittest.TestCase):
@@ -79,11 +82,32 @@ class DataContentTest(unittest.TestCase):
 
 
 class MethodsTestCases(unittest.TestCase):
-    pass
+    @given(st.integers(min_value=1, max_value=10000), st.integers())
+    @settings(deadline=6000)
+    def test_encode_return_type(self, value_sample, encoding_type):
+        encoded = elias_encoding(value_sample, encoding_type)
+        self.assertIsInstance(encoded, str)
+
+    @given(st.binary(min_size=1, max_size=20), st.integers())
+    @settings(deadline=6000)
+    def test_decode_return_type(self, value_sample, encoding_type):
+        decoded = elias_decoding(str(value_sample), encoding_type)
+        self.assertIsInstance(decoded, int)
+
+    @given(st.text())
+    @settings(deadline=6000)
+    def test_memory_return_type(self, value_sample):
+        size = total_size(value_sample)
+        self.assertIsInstance(size, int)
 
 
 class DataProcessingTestCases(unittest.TestCase):
-    pass
+    @given(st.integers(min_value=1, max_value=10000), st.integers())
+    @settings(deadline=6000)
+    def test_encode_decode_pair(self, value_sample, encoding_type):
+        encoded = elias_encoding(value_sample, encoding_type)
+        decoded = elias_decoding(encoded, encoding_type)
+        self.assertEqual(value_sample, decoded)
 
 
 if __name__ == '__main__':
