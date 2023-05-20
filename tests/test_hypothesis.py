@@ -11,7 +11,7 @@ from elias_encoding import elias_encoding
 from test_memory import total_size
 
 
-class BasicTestCase(unittest.TestCase):
+class BasicTestCases(unittest.TestCase):
     @given(st.just(file_path))
     @settings(deadline=None)
     def test_file_existance(self, file_path_):
@@ -33,7 +33,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertIsNotNone(json_data)
 
 
-class DataContentTest(unittest.TestCase):
+class DataContentTestCases(unittest.TestCase):
     @given(st.just(file_path), st.just('utf-8'))
     @settings(deadline=6000)
     def test_file_has_post(self, file_path_, encoding_):
@@ -88,10 +88,11 @@ class MethodsTestCases(unittest.TestCase):
         encoded = elias_encoding(value_sample, encoding_type)
         self.assertIsInstance(encoded, str)
 
-    @given(st.binary(min_size=1, max_size=20), st.integers(min_value=1, max_value=2))
+    @given(st.integers(min_value=1, max_value=10000), st.integers(min_value=1, max_value=2))
     @settings(deadline=6000)
     def test_decode_return_type(self, value_sample, encoding_type):
-        decoded = elias_decoding(str(value_sample), encoding_type)
+        encoded = elias_encoding(value_sample, encoding_type)
+        decoded = elias_decoding(encoded, encoding_type)
         self.assertIsInstance(decoded, int)
 
     @given(st.text())
@@ -99,6 +100,14 @@ class MethodsTestCases(unittest.TestCase):
     def test_memory_return_type(self, value_sample):
         size = total_size(value_sample)
         self.assertIsInstance(size, int)
+
+    @given(st.lists(st.integers(), min_size=5, max_size=25), st.lists(st.integers(), min_size=5, max_size=25))
+    @settings(deadline=6000)
+    def test_memory_comparison(self, first, second):
+        two = first + second
+        size_first = total_size(first)
+        size_two = total_size(two)
+        self.assertGreaterEqual(size_two, size_first)
 
 
 class DataProcessingTestCases(unittest.TestCase):
@@ -108,6 +117,13 @@ class DataProcessingTestCases(unittest.TestCase):
         encoded = elias_encoding(value_sample, encoding_type)
         decoded = elias_decoding(encoded, encoding_type)
         self.assertEqual(value_sample, decoded)
+
+    @given(st.integers(min_value=100, max_value=10000))
+    @settings(deadline=6000)
+    def test_encode_memory_comparison(self, value_sample):
+        encoded_first = elias_encoding(value_sample, 1)
+        encoded_second = elias_encoding(value_sample, 2)
+        self.assertGreaterEqual(total_size(encoded_first), total_size(encoded_second))
 
 
 if __name__ == '__main__':
